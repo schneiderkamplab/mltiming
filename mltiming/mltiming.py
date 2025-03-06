@@ -5,6 +5,7 @@ from time import monotonic, sleep
 
 __all__ = [
     "TimingResult",
+    "no_timing",
     "timing_iterator",
     "timing",
 ]
@@ -22,6 +23,10 @@ class TimingResult:
     @property
     def dict(self):
         return {self.key: self.elapsed}
+
+@contextmanager
+def no_timing(*args, **kwargs):
+    yield
 
 @contextmanager
 def timing(
@@ -49,6 +54,7 @@ def timing_iterator(
     key,
     message=None,
     format="{result.elapsed:.2f}s",
+    timing=timing,
 ):
     iterator = iter(iterable)
     while True:
