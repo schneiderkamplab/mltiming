@@ -3,7 +3,11 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from time import monotonic, sleep
 
-__all__ = ["timing", "TimingResult"]
+__all__ = [
+    "TimingResult",
+    "timing_iterator",
+    "timing",
+]
 
 @dataclass
 class TimingResult:
@@ -21,8 +25,9 @@ class TimingResult:
 
 @contextmanager
 def timing(
-    message=None,
+    dict=None,
     key=None,
+    message=None,
     format="{result.elapsed:.2f}s",
 ):
     if message is not None:
@@ -35,3 +40,26 @@ def timing(
         result.end = monotonic()
         if message:
             print(format.format(**vars()), flush=True)
+        if dict is not None:
+            dict.update(result.dict)
+
+def timing_iterator(
+    iterable,
+    dict,
+    key,
+    message=None,
+    format="{result.elapsed:.2f}s",
+):
+    iterator = iter(iterable)
+    while True:
+        try:
+            with timing(
+                dict=dict,
+                key=key,
+                message=message,
+                format=format,
+            ):
+                item = next(iterator)
+            yield item
+        except StopIteration:
+            return
