@@ -46,7 +46,8 @@ def timing(
         if message:
             print(format.format(**vars()), flush=True)
         if dict is not None:
-            dict.update(result.dict)
+            for key, value in result.dict.items():
+                dict[key] = dict.get(key, 0) + value
 
 def timing_iterator(
     iterable,
